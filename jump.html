@@ -1,0 +1,72 @@
+<canvas id="j" width="400" height="400"></canvas>
+<p id="score"></p>
+<script>    
+    window.onload=function(){
+        c=document.getElementById("j");
+        s=document.getElementById("score");
+        ctx=c.getContext("2d");
+        document.addEventListener("keydown",keyPush);
+        setInterval(game,1000/30);
+    }
+    px=70;py=400;
+    xv=0;yv=0;
+    o=[];
+    step=0;
+    
+    function drawPlayer(px,py){
+        ctx.fillStyle="red";
+        ctx.fillRect(px-5,py-20,10,20);
+    }
+    function drawObstacle(ox,oy){
+        ctx.fillStyle="white";
+        ctx.fillRect(ox,oy,50,50);
+    }
+    function newObstacle(){
+        return {"x":400,"y":Math.floor(Math.random()*350)}
+    }
+    function keyPush(evt){
+        if (evt.keyCode==32){
+            yv=-20;
+        }
+    }
+    
+    function game(){
+        ctx.fillStyle="black";
+        ctx.fillRect(0,0,c.width,c.height);
+        
+        // player
+        if (py<400){
+            yv=yv+3;
+        }
+        if (py<400 && py+yv>=400){
+            yv=0;
+            py=400;
+        }
+        px=px+xv;
+        py=py+yv;
+        drawPlayer(px,py);
+        
+        // map
+        if (step%20==0){
+            o.push(newObstacle());
+            if (o.length>5){
+                o.shift();
+            }
+        }
+        for (var i=0; i<o.length; i++){
+            o[i].x=o[i].x-5;
+            drawObstacle(o[i].x,o[i].y);
+        }
+        
+        // hit
+        for (var i=0; i<o.length; i++){
+            if (px+5>o[i].x && px-5<o[i].x+50){
+                if (py-20<o[i].y+50 && py>o[i].y){
+                    s.innerHTML="game over";
+                }
+            }
+        }
+        
+        step++;
+    }
+</script>
