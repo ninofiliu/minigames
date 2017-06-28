@@ -1,0 +1,76 @@
+<style>
+    body {
+        font-family: "Consolas";
+    }
+</style>
+<canvas width="400" height="400" id="c"></canvas>
+<h2 id="score"></h2>
+<script>
+    window.onload=function(){
+        c=document.getElementById("c");
+        score=document.getElementById("score");
+        ctx=c.getContext("2d");
+        document.addEventListener("keydown",keyPush);
+        px=50;py=200;yv=0;
+        o=[];
+        step=0;
+        gameover=false;
+        display(px,0);
+        setInterval(game,1000/25);
+    }
+    function keyPush(evt){
+        if (evt.keyCode==32){
+            yv=-15;
+        }
+    }
+    function game(){
+        // player
+        if (py+yv>380){
+            py=380;
+            yv=0;
+        }
+        if (py+yv<=0){
+            py=0;
+            yv=0;
+        }
+        if (px+yv>0 && px+yv<=380){
+            py=py+yv;
+            yv=yv+2
+        }
+        
+        // obstacles
+        if (step%30==0){
+            o.push({"x":400,"y":Math.floor(250*Math.random())});
+        }
+        for (i=0; i<o.length; i++){
+            o[i].x-=7;
+        }
+        
+        // collision
+        for (i=0; i<o.length; i++){
+            if (px<o[i].x+50 && px+20>o[i].x){
+                if (py>o[i].y+150 || py<o[i].y){
+                    gameover=true;
+                }
+            }
+        }
+        
+        // display
+        if (!gameover){
+            display(px,o);
+            step++;
+        }
+        score.innerHTML="score: "+Math.floor((step-20)/30)+"pts"
+    }
+    function display(px,o){
+        ctx.fillStyle="black";
+        ctx.fillRect(0,0,400,400);
+        ctx.fillStyle="white";
+        for (var i=0; i<o.length; i++){
+            ctx.fillRect(o[i].x,0,50,o[i].y);
+            ctx.fillRect(o[i].x,o[i].y+150,50,300-o[i].y);
+        }
+        ctx.fillStyle="red";
+        ctx.fillRect(px,py,20,20);
+    }
+</script>
