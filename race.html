@@ -1,0 +1,86 @@
+<canvas id="c" width="300" height="500"></canvas>
+<p id="score"></p>
+<script>
+    window.onload=function(){
+        px=150;
+        xv=0;
+        o=[];
+        step=0;
+        speed=5;
+        gameover=false;
+        c=document.getElementById("c");
+        s=document.getElementById("score");
+        ctx=c.getContext("2d");
+        display(px,o);
+        document.addEventListener("keydown",keyPush);
+        setInterval(game,1000/25);
+    }
+    function game(){
+        // player
+        if (xv<0){
+            xv++;
+        }
+        if (xv>0){
+            xv--;
+        }
+        if (px+xv>295){
+            xv=0;
+            px=295;
+        }
+        if (px+xv<5){
+            xv=0;
+            px=5;
+        }
+        if (px+xv<295 && px+xv>5){
+            px+=xv;
+        }
+        
+        // obstacles
+        step++;
+        if (step%Math.floor(100/speed)==0){
+            o.push({"x":Math.floor(250*Math.random()),"y":-50});
+        }
+        if (o.length>10){
+            o.shift;
+        }
+        for (var i=0; i<o.length; i++){
+            o[i].y+=speed;
+        }
+        if (step%50==0){
+            speed++;
+        }
+        
+        // game over
+        for (var i=0; i<o.length; i++){
+            if (px>o[i].x && px<o[i].x+50 && o[i].y<440 && o[i].y+50>420){
+                gameover=true;
+            }
+        }
+        
+        if (!gameover){
+            s.innerHTML="score: "+step+"pts<br>speed: "+speed;
+            display(px,o);
+        }
+    }
+    function keyPush(evt){
+        switch (evt.keyCode){
+            case 37:
+                xv=-10;
+                break;
+            case 39:
+                xv=10;
+                break;
+        }
+    }
+    function display(px,o){
+        ctx.fillStyle="black";
+        ctx.fillRect(0,0,300,500);
+        ctx.fillStyle="white";
+        for (var i=0; i<o.length; i++){
+            ctx.fillRect(o[i].x,o[i].y,50,50);
+        }
+        ctx.fillStyle="red";
+        ctx.fillRect(px-5,420,10,20);
+        
+    }
+</script>
