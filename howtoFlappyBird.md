@@ -195,9 +195,78 @@ function player(y){
         this.yv++;
       }
     }
-}
+  }
 }
 ```
+
+Finally, to make the bird do a free fall, we must call *b.move()* regularly, which we'll do in *game*:
+
+```javascript
+function game(){
+  b.move();
+  display();
+}
+```
+
+The bird is now free falling. We want that whenever the client presses the spacebar, the bird jump. A bird jumping means that its vertical velocity takes physically a vertical value (so on the script, a negative value). We'll implement this on the *keypush* function that is called everytime the client presses a key:
+
+```javascript
+function keypush(evt){
+  if (evt.keyCode==32){ // = if the user have pressed the spacebar
+    b.yv=-NUMBER; // the greater the number, the bigger the jump. 10 is fine here.
+  }
+} 
+```
+
+We now have a bird that is completely controllable by the player and who moves as if it was under the subject of gravity. Before coding the obstacles, here's how the code looks like:
+
+```javascript
+function player(y){
+  this.x=100;
+  this.y=y;
+  this.yv=0;
+  this.move=function(){
+    fy=this.y+this.yv; // fy 
+    if (fy<10){
+      this.y=10;
+      this.yv=0;
+    }
+    else {
+      if (fy>=390){
+        this.y=390;
+        this.yv=0;
+      }
+      else {
+        this.y=fy;
+        this.yv++;
+      }
+    }
+  }
+}
+function obstacle(x,y){
+  this.x=x;
+  this.y=y;
+}
+window.onload=function(){
+  ctx=document.getElementById("c").getContext("2d");
+  document.addEventListener("keydown",keypush);
+  setInterval(game,1000/40);
+}
+function keypush(evt){
+  if (evt.keyCode==32){ // = if the user have pressed the spacebar
+    b.yv=-NUMBER; // the greater the number, the bigger the jump. 10 is fine here.
+  }
+}
+function game(){
+  b.move();
+  display();
+}
+function display(){
+  //
+}
+```
+
+## Obstacles
 
 
 
