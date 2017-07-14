@@ -1,3 +1,4 @@
+-------not finished yet-------
 # How to code Flappy Bird
 *by Nino Filiu*
 
@@ -113,6 +114,7 @@ function bird(x,y){
   this.move=function(){
     // we'll code it later
   }
+}
 function obstacle(x,y){
   this.x=x;
   this.y=y;
@@ -151,7 +153,24 @@ We're done with creating the objects of the game. Now, let's code the bird's mov
 ## Bird's movement
 
 Quick physics lesson: when an object falls without friction, its altitude is a parabola over time:
-`y(t)=y(0)+yv(0)*t-(g/2)*t²` where g is the gravitational constant and yv is the object's vertical velocity, which means `y'(t)=yv(t)`.
+`y(t)=y(0)+yv(0)*t-(g/2)*t²` where g is the gravitational constant and yv is the object's vertical velocity, which means `y'(t)=yv(t)=-gt`. If we capture the movement at regular intervals we have `y((n+1)T)=y(nT)+(approx)T*yv(nT)` and `yv((n+1)T)=yv(nT)-gT`. We're going to use these two equations to code the movement of the bird.
+
+Basically, what this means in our code is that a good and simple way to mimic the effect of gravity on the bird is to code the following:
+*Don't forget that on a computer screen, the y axis goes downward*
+
+```javascript
+function bird(x,y){
+  this.x=x;
+  this.y=y;
+  this.yv=0; // the bird is created with a y-velocity equal to zero
+  this.move=function(){
+    this.y+=this.yv; // the bird's altitude is refreshed according to the first equation
+    this.yv+=NUMBER; // the bird's verrtical velocity is refreshed according to the second equation
+                     // The bigger NUMBER is, the harder the gravity will be
+                     // NUMBER=1 is fine so this line can be replaced by this.yv++;
+  }
+}
+```
 
 
 
