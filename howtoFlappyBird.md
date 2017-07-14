@@ -1,4 +1,3 @@
--------not finished yet-------
 # How to code Flappy Bird
 *by Nino Filiu*
 
@@ -542,10 +541,10 @@ function display(){
 ## Aaaaaand there you have it.
 
 ```html
-<canvas width="400" height="400"></canvas>
+<canvas id="c" width="400" height="400"></canvas>
 <script>
-function player(y){
-  this.x=100;
+function bird(x,y){
+  this.x=x;
   this.y=y;
   this.yv=0;
   this.move=function(){
@@ -571,13 +570,13 @@ function obstacle(x,y){
   this.y=y;
 }
 window.onload=function(){
-  ctx=document.getElementById("c").getContext("2d");
-  document.addEventListener("keydown",keypush);
-  setInterval(game,1000/40);
   b=new bird(100,200);
   o=[];
   step=0;
   gameover=false;
+  ctx=document.getElementById("c").getContext("2d");
+  document.addEventListener("keydown",keypush);
+  setInterval(game,1000/40);
 }
 function keypush(evt){
   if (evt.keyCode==32){
@@ -601,8 +600,8 @@ function game(){
     
     // collision detection
     for (i=0; i<o.length; i++){
-      if (Math.abs(p.x-o[i].x)<30){
-        if (Math.abs(p.y-o[i].y)>45){
+      if (Math.abs(b.x-o[i].x)<30){
+        if (Math.abs(b.y-o[i].y)>45){
           gameover=true;
         }
       }
