@@ -625,7 +625,7 @@ function display(){
 </script>
 ```
 
-You now have a fully functionning minimalist game of Flappy Bird in 370 lines. This is sure not perfectly coded and there are big performance flaws that can be easily corrected, but still: it works! Enjoy the game by pasting the html code in an html file and opening it using your favorite web browser.
+You now have a fully functionning minimalist game of Flappy Bird in 370 lines. This is sure not perfectly coded and there are big performance flaws that can be easily corrected, and you can't restart the game, and the score is not displayed, and the end of the game is announced by the screen simpply freezing... but still: it works! Enjoy the game by pasting the html code in an html file and opening it using your favorite web browser.
 
 I hope you have enjoyed this tutorial and that this have helped you learn something about JavaScript, object-oriented programming and arcade game programming.
 
