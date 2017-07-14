@@ -373,20 +373,261 @@ function display(){
 }
 ```
 
+## Actual game implementation
 
+First, let's implement the "game over". A minimalist way to do it is to initalise a *gameover* variable to *false* and execute something in the *game* function only if the game is not over (i.e. *gameover* is equal to *false*):
+
+```javascript
+window.onload=function(){
+  ctx=document.getElementById("c").getContext("2d");
+  document.addEventListener("keydown",keypush);
+  setInterval(game,1000/40);
+  b=new bird(100,200);
+  o=[];
+  step=0;
+  gameover=false;
+}
+function game(){
+  if (!gameover){
+    step++;
+    if (step%45==0){
+      x=420;
+      y=55+Math.floor(290*Math.random());
+      o.push(new obstacle(x,y));
+    }
+    for (i=0; i<o.length; i++){
+      o[i].x-=4;
+    }
+    b.move();
+    display();
+  }
+}
+```
+
+Now let's see when to trigger the end of the game. In this version, let's say that the only way to lose the game is to make the bird touch one of the obstacle. A reminder that the bird will appear as 20x20 square and the obstacle's "whole" will appear as a 40x110 rectangle. If the bird have for coordinates (bx,by) and an obstacle (ox,oy), they touch if `|bx-ox|<30` and `|by-oy|>45`. Trust me, or check it for yourself with a quick sketch. A collision detection can be thus implemented like this:
+
+```javascript
+function game(){
+  if (!gameover){
+    step++;
+    // obstacles creation
+    if (step%45==0){
+      x=420;
+      y=55+Math.floor(290*Math.random());
+      o.push(new obstacle(x,y));
+    }
+    // obstacles & bird moving
+    for (i=0; i<o.length; i++){
+      o[i].x-=4;
+    }
+    b.move();
+    
+    // collision detection
+    for (i=0; i<o.length; i++){
+      if (Math.abs(p.x-o[i].x)<30){
+        if (Math.abs(p.y-o[i].y)>45){
+          gameover=true;
+        }
+      }
+    }
+    
+    // display
+    display();
+  }
+}
+```
+
+Great, now we have fully functionning game! The last thing to implement is the display. Before we move there, here's how the code should look like:
+
+```javascript
+function player(y){
+  this.x=100;
+  this.y=y;
+  this.yv=0;
+  this.move=function(){
+    fy=this.y+this.yv;
+    if (fy<10){
+      this.y=10;
+      this.yv=0;
+    }
+    else {
+      if (fy>=390){
+        this.y=390;
+        this.yv=0;
+      }
+      else {
+        this.y=fy;
+        this.yv++;
+      }
+    }
+  }
+}
+function obstacle(x,y){
+  this.x=x;
+  this.y=y;
+}
+window.onload=function(){
+  ctx=document.getElementById("c").getContext("2d");
+  document.addEventListener("keydown",keypush);
+  setInterval(game,1000/40);
+  b=new bird(100,200);
+  o=[];
+  step=0;
+  gameover=false;
+}
+function keypush(evt){
+  if (evt.keyCode==32){
+    b.yv=-10;
+  }
+}
+function game(){
+  if (!gameover){
+    step++;
+    // obstacles creation
+    if (step%45==0){
+      x=420;
+      y=55+Math.floor(290*Math.random());
+      o.push(new obstacle(x,y));
+    }
+    // obstacles & bird moving
+    for (i=0; i<o.length; i++){
+      o[i].x-=4;
+    }
+    b.move();
+    
+    // collision detection
+    for (i=0; i<o.length; i++){
+      if (Math.abs(p.x-o[i].x)<30){
+        if (Math.abs(p.y-o[i].y)>45){
+          gameover=true;
+        }
+      }
+    }
+    
+    // display
+    display();
+  }
+}
+function display(){
+  //
+}
+```
+
+## Display
+
+This is the easiest part once you've understood how to display thing on a canvas. Basically in the canvas' context, fillStyle is the field of the color in which we are drawing, and fillRect(x,y,width,height) is the method to fill draw a rectangle of the color fillStyle.
+
+Given these information, *display* is just the following function:
+
+```javascript
+function display(){
+
+  // fill the whole canvas black to get rid of the previous display
+  ctx.fillStyle="black";
+  ctx.fillRect(0,0,400,400);
   
+  // draw all the obstacles
+  ctx.fillStyle="white";
+  for (i=0; i<o.length; i++){
+    ctx.fillRect(o[i].x-20,0,40,o[i].y-55);
+    ctx.fillRect(o[i].x-20,o[i].y+55,40,400-o[i].y+55);
+  }
+  
+  // draw the bird
+  ctx.fillStyle="red";
+  ctx.fillRect(b.x-10,b.y-10,20,20);
+}
+```
 
+## Aaaaaand there you have it.
 
+```html
+<canvas width="400" height="400"></canvas>
+<script>
+function player(y){
+  this.x=100;
+  this.y=y;
+  this.yv=0;
+  this.move=function(){
+    fy=this.y+this.yv;
+    if (fy<10){
+      this.y=10;
+      this.yv=0;
+    }
+    else {
+      if (fy>=390){
+        this.y=390;
+        this.yv=0;
+      }
+      else {
+        this.y=fy;
+        this.yv++;
+      }
+    }
+  }
+}
+function obstacle(x,y){
+  this.x=x;
+  this.y=y;
+}
+window.onload=function(){
+  ctx=document.getElementById("c").getContext("2d");
+  document.addEventListener("keydown",keypush);
+  setInterval(game,1000/40);
+  b=new bird(100,200);
+  o=[];
+  step=0;
+  gameover=false;
+}
+function keypush(evt){
+  if (evt.keyCode==32){
+    b.yv=-10;
+  }
+}
+function game(){
+  if (!gameover){
+    step++;
+    // obstacles creation
+    if (step%45==0){
+      x=420;
+      y=55+Math.floor(290*Math.random());
+      o.push(new obstacle(x,y));
+    }
+    // obstacles & bird moving
+    for (i=0; i<o.length; i++){
+      o[i].x-=4;
+    }
+    b.move();
+    
+    // collision detection
+    for (i=0; i<o.length; i++){
+      if (Math.abs(p.x-o[i].x)<30){
+        if (Math.abs(p.y-o[i].y)>45){
+          gameover=true;
+        }
+      }
+    }
+    
+    // display
+    display();
+  }
+}
+function display(){
+  ctx.fillStyle="black";
+  ctx.fillRect(0,0,400,400);
+  ctx.fillStyle="white";
+  for (i=0; i<o.length; i++){
+    ctx.fillRect(o[i].x-20,0,40,o[i].y-55);
+    ctx.fillRect(o[i].x-20,o[i].y+55,40,400-o[i].y+55);
+  }
+  ctx.fillStyle="red";
+  ctx.fillRect(b.x-10,b.y-10,20,20);
+}
+</script>
+```
 
+You now have a fully functionning minimalist game of Flappy Bird in 370 lines. This is sure not perfectly coded and there are big performance flaws that can be easily corrected, but still: it works! Enjoy the game by pasting the html code in an html file and opening it using your favorite web browser.
 
+I hope you have enjoyed this tutorial and that this have helped you learn something about JavaScript, object-oriented programming and arcade game programming.
 
-
-
-
-
-
-
-
-
-
-
+**by Nino Filiu - ninofiliu.fr/games**
