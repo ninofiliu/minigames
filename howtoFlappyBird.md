@@ -180,7 +180,7 @@ function player(y){
   this.y=y;
   this.yv=0;
   this.move=function(){
-    fy=this.y+this.yv; // fy 
+    fy=this.y+this.yv; // fy = future y
     if (fy<10){
       this.y=10;
       this.yv=0;
@@ -226,7 +226,7 @@ function player(y){
   this.y=y;
   this.yv=0;
   this.move=function(){
-    fy=this.y+this.yv; // fy 
+    fy=this.y+this.yv;
     if (fy<10){
       this.y=10;
       this.yv=0;
@@ -251,10 +251,12 @@ window.onload=function(){
   ctx=document.getElementById("c").getContext("2d");
   document.addEventListener("keydown",keypush);
   setInterval(game,1000/40);
+  b=new bird(100,200);
+  o=[];
 }
 function keypush(evt){
-  if (evt.keyCode==32){ // = if the user have pressed the spacebar
-    b.yv=-NUMBER; // the greater the number, the bigger the jump. 10 is fine here.
+  if (evt.keyCode==32){
+    b.yv=-10;
   }
 }
 function game(){
@@ -268,6 +270,108 @@ function display(){
 
 ## Obstacles
 
+An obstacle is basically two rectangles emerging from the top and the bottom of the screen. They are defined only by a position (x,y) that is basically the center of the "whole" between the two rectangles. First, we need to regularly create them. For this, we'll count how many times we have already called *game* and based on this information, we'll create a new obstacle every, let's say, every 45 calls to game:
+
+```javascript
+window.onload=function(){
+  ctx=document.getElementById("c").getContext("2d");
+  document.addEventListener("keydown",keypush);
+  setInterval(game,1000/40);
+  b=new bird(100,200);
+  o=[];
+  step=0; // number of times that we have called game()
+}
+function game(){
+  step++;
+  if (step%45==0){
+    // the rectangles will be 40-pixels wide and the whole between will be 110-pixels tall
+    x=420; // we'll create the obstacle at the right of the canvas
+           // 420 because 400 (width of canvas) + 20 (semi-width of obstacle)
+    y=55+Math.floor(290*Math.random()); // random number between 55 and 345
+    o.push(new obstacle(x,y)); // we add the obstacle with these coordinates to the obstacles list
+  }
+  b.move();
+  display();
+}
+```
+
+Now we'll have to make them move to the left, which is basically just regularly subtracting the same value to their x-coordinates:
+
+```javascript
+function game(){
+  step++;
+  if (step%45==0){
+    x=420;
+    y=55+Math.floor(290*Math.random());
+    o.push(new obstacle(x,y));
+  }
+  for (i=0; i<o.length; i++){
+    o[i].x-=NUMBER; // the greater the number, the greater the speed at which the obstacles move. 4 is fine.
+  }
+  b.move();
+  display();
+}
+```
+
+Now we have a moving obstacles and a moving bird. Before we go on to the actual "game" coding (collisions, game over triggering, etc), here's how the code should look like:
+
+```javascript
+function player(y){
+  this.x=100;
+  this.y=y;
+  this.yv=0;
+  this.move=function(){
+    fy=this.y+this.yv;
+    if (fy<10){
+      this.y=10;
+      this.yv=0;
+    }
+    else {
+      if (fy>=390){
+        this.y=390;
+        this.yv=0;
+      }
+      else {
+        this.y=fy;
+        this.yv++;
+      }
+    }
+  }
+}
+function obstacle(x,y){
+  this.x=x;
+  this.y=y;
+}
+window.onload=function(){
+  ctx=document.getElementById("c").getContext("2d");
+  document.addEventListener("keydown",keypush);
+  setInterval(game,1000/40);
+  b=new bird(100,200);
+  o=[];
+  step=0;
+}
+function keypush(evt){
+  if (evt.keyCode==32){
+    b.yv=-10;
+  }
+}
+function game(){
+  step++;
+  if (step%45==0){
+    x=420;
+    y=55+Math.floor(290*Math.random());
+    o.push(new obstacle(x,y));
+  }
+  for (i=0; i<o.length; i++){
+    o[i].x-=4;
+  }
+  b.move();
+  display();
+}
+function display(){
+  //
+}
+```
 
 
   
