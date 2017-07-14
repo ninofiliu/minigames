@@ -172,6 +172,33 @@ function bird(x,y){
 }
 ```
 
+Now we have a bird that is free falling if we call *b.move()* regularly. Let's just modify a bit the code so that the bird can't fly above y=0 and below y=400. One reminder and one info to understand the following modification: computer's y-axis goes downward, and the bird will appear on the screen as a square 20-pixels-wide square centered on the the bird's position. This last info means that the bird appears "on the floor" if *this.y=390* and "touching the ceiling" if *this.y=10*.
+
+```javascript
+function player(y){
+  this.x=100;
+  this.y=y;
+  this.yv=0;
+  this.move=function(){
+    fy=this.y+this.yv; // fy 
+    if (fy<10){
+      this.y=10;
+      this.yv=0;
+    }
+    else {
+      if (fy>=390){
+        this.y=390;
+        this.yv=0;
+      }
+      else {
+        this.y=fy;
+        this.yv++;
+      }
+    }
+}
+}
+```
+
 
 
   
